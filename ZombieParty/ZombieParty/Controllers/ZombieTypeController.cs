@@ -14,9 +14,9 @@ namespace ZombieParty.Controllers
 
         public IActionResult Index()
         {
-            this.ViewBag.MaListe = _baseDonnees.ZombieTypes.ToList();
+            List<ZombieType> zombieTypesList = _baseDonnees.ZombieTypes.ToList();
 
-            return View();
+            return View(zombieTypesList);
         }
 
         //GET CREATE
@@ -32,6 +32,7 @@ namespace ZombieParty.Controllers
             if (ModelState.IsValid)
             {
                 _baseDonnees.ZombieTypes.Add(zombieType);
+                TempData["Success"] = $"{zombieType.TypeName} zombie type added";
                 return this.RedirectToAction("Index");
 
             }
