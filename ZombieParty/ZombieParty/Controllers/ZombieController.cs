@@ -29,12 +29,9 @@ namespace ZombieParty.Controllers
         public IActionResult Create(Zombie zombie)
         {
             //Si le modèle est valide le zombie est ajouté et nous sommes redirigé vers index.
-            if (ModelState.IsValid)
-            {
-                _baseDonnees.Zombies.Add(zombie);
-                TempData["Success"] = $"Zombie {zombie.Name} added";
-                return this.RedirectToAction("Index");
-            }
+            _baseDonnees.Zombies.Add(zombie);
+            TempData["Success"] = $"Zombie {zombie.Name} added";
+            return this.RedirectToAction("Index");
             //Il faut repopuler le zombieType dans le ViewBag
             //Aller chercher le ZombieType sélectionné, rappel 2W5 Linq
             ZombieType selectedZombieType = _baseDonnees.ZombieTypes.Where(zt => zt.Id == zombie.ZombieTypeId).SingleOrDefault();
