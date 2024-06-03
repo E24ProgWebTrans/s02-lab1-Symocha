@@ -1,20 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ZombieParty.Models;
+using ZombieParty.ViewModels;
 
 namespace ZombieParty.Controllers
 {
     public class ZombieTypeController : Controller
     {
+        private BaseDonnees _baseDonnees { get; set; }
+
+        public ZombieTypeController(BaseDonnees baseDonnees)
+        {
+            _baseDonnees = baseDonnees;
+        }
+
         public IActionResult Index()
         {
-            this.ViewBag.MaListe = new List<ZombieType>()
+            List<ZombieType> zombieTypesList = _baseDonnees.ZombieTypes.ToList();
+
+            return View(zombieTypesList);
+        }
+        public IActionResult Details(int id)
+        {
+            ZombieTypeVM zombieTypeVM = new()
             {
-                new ZombieType(){TypeName= "Virus", Id=1},
-                new ZombieType(){TypeName= "Contact", Id=2}
+                ZombieType = new(),
+                ZombiesList = _baseDonnees.Zombies.Where(z => z.ZombieTypeId == id).ToList(),
+                ZombiesCount = _baseDonnees.Zombies.Count(),
+                PointsAverage = _baseDonnees.Zombies.Average(p => p.Point)
+
             };
 
-            return View();
+            zombieTypeVM.ZombieType = _baseDonnees.ZombieTypes.FirstOrDefault(zt => zt.Id == id);
+            return View(zombieTypeVM);
         }
+
 
         //GET CREATE
         public IActionResult Create()
@@ -22,13 +41,16 @@ namespace ZombieParty.Controllers
             return View();
         }
 
-        //POST
+        //POSTww
         [HttpPost]
         public IActionResult Create(Models.ZombieType zombieType)
         {
             if (ModelState.IsValid)
             {
-                // Ajouter à la BD
+                _baseDonnees.ZombieTypes.Add(zombieType);
+                TempData["Success"] = $"{zombieType.TypeName} zombie type added";
+                return this.RedirectToAction("Index");
+
             }
 
             return this.View(zombieType);
